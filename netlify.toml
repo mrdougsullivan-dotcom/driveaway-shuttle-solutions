@@ -1,0 +1,10 @@
+# Netlify Configuration - Deploy with distance calculator
+[build]
+  base = "web"
+  command = "VITE_BACKEND_URL=https://preview-zgdvxfmlompr.share.sandbox.dev bun install && bun run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

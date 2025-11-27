@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Driveaway Shuttle Solutions",
+    "slug": "driveaway-shuttle-solutions",
+    "scheme": "driveawayshuttle",
+    "version": "1.0.2",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dougsullivan.driveawayshuttle",
+      "buildNumber": "1",
+    "infoPlist": {
+  "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload driver contact screenshots.",
+  "NSCameraUsageDescription": "This app needs access to your camera to take photos of driver contact information.",
+  "NSCalendarsUsageDescription": "This app does not access your calendar. This permission is required by a third-party library.",
+  "NSContactsUsageDescription": "This app does not access your contacts. This permission is required by a third-party library.",
+  "NSLocationWhenInUseUsageDescription": "This app uses your location to help find nearby shuttle companies and calculate distances.",
+  "LSApplicationQueriesSchemes": [
+    "tel",
+    "mailto"
+  ],
+  "ITSAppUsesNonExemptEncryption": false
+}
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "package": "com.dougsullivan.driveawayshuttle",
+      "versionCode": 1, 
+"adaptiveIcon": {
+    "foregroundImage": "./assets/icon.png",
+    "backgroundColor": "#ffffff"
+  },
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2a058597-9a82-4cca-8b53-61f0e6053139"
+      }
+    },
+    "owner": "farcyded"
+  }
+}
