@@ -2,5 +2,8 @@
   "buildCommand": "npx expo export --platform web",
   "outputDirectory": "dist",
   "installCommand": "npm install --legacy-peer-deps",
-  "framework": null
+  "framework": null,
+  "env": {
+    "EXPO_PUBLIC_VIBECODE_BACKEND_URL": "https://driveaway-backend-production.up.railway.app"
+  }
 }
