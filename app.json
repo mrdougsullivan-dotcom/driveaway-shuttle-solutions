@@ -44,6 +44,12 @@
         "CAMERA"
       ]
     },
+    "web": {
+      "favicon": "./assets/icon.png",
+      "bundler": "metro",
+      "output": "single",
+      "name": "Driveaway Shuttle Solutions"
+    },
     "extra": {
       "eas": {
         "projectId": "2a058597-9a82-4cca-8b53-61f0e6053139"

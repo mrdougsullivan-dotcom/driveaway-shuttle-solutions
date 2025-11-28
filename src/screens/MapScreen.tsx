@@ -9,6 +9,7 @@ import {
   NativeSyntheticEvent,
   ImageBackground,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type RootStackParamList } from "@/navigation/types";
 import { api } from "@/lib/api";
@@ -26,6 +27,7 @@ const MapScreen = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     loadStates();
@@ -80,7 +82,7 @@ const MapScreen = ({ navigation }: Props) => {
 
   return (
     <View className="flex-1 bg-slate-50">
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 16 }}>
         {/* Header with Image Background */}
         <ImageBackground
           source={require("../../assets/image-1764111920.jpeg")}
@@ -151,29 +153,16 @@ const MapScreen = ({ navigation }: Props) => {
                   elevation: 8,
                 }}
               >
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-1">
-                    <View className="flex-row items-center gap-3 mb-3">
-                      <View className="w-14 h-14 bg-white/20 rounded-full items-center justify-center">
-                        <MapPin size={28} color="#ffffff" strokeWidth={2.5} />
-                      </View>
-                      <View>
-                        <Text className="text-2xl font-bold text-white">
-                          {selectedState.name}
-                        </Text>
-                        <Text className="text-sm text-blue-100 font-medium">
-                          {selectedState.code}
-                        </Text>
-                      </View>
-                    </View>
+                <View className="flex-row items-center gap-4">
+                  <View className="w-14 h-14 bg-white/20 rounded-full items-center justify-center">
+                    <MapPin size={28} color="#ffffff" strokeWidth={2.5} />
                   </View>
-
-                  <View className="bg-white/30 px-5 py-3 rounded-2xl backdrop-blur">
-                    <Text className="text-xs text-white/90 font-semibold mb-1">
-                      DRIVERS
+                  <View className="flex-1">
+                    <Text className="text-2xl font-bold text-white">
+                      {selectedState.name}
                     </Text>
-                    <Text className="text-white font-bold text-2xl text-center">
-                      {selectedState.driverCount}
+                    <Text className="text-sm text-blue-100 font-medium">
+                      {selectedState.code} • {selectedState.driverCount} {selectedState.driverCount === 1 ? 'Driver' : 'Drivers'}
                     </Text>
                   </View>
                 </View>
@@ -290,38 +279,50 @@ const MapScreen = ({ navigation }: Props) => {
             </View>
           </View>
 
-          {/* Continue Button */}
-          <Pressable
-            onPress={handleContinue}
-            className="active:opacity-80 mb-8"
-            disabled={!selectedState}
-          >
-            <LinearGradient
-              colors={["#3b82f6", "#2563eb"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                borderRadius: 16,
-                padding: 18,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                shadowColor: "#3b82f6",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 12,
-                elevation: 6,
-              }}
-            >
-              <Text className="text-white font-bold text-lg">
-                View Cities
-              </Text>
-              <ChevronRight size={24} color="#ffffff" strokeWidth={3} />
-            </LinearGradient>
-          </Pressable>
         </View>
       </ScrollView>
+
+      {/* Fixed Footer Button */}
+      <View 
+        style={{ 
+          paddingHorizontal: 16, 
+          paddingTop: 12,
+          paddingBottom: insets.bottom + 12,
+          backgroundColor: '#f8fafc',
+          borderTopWidth: 1,
+          borderTopColor: '#e2e8f0',
+        }}
+      >
+        <Pressable
+          onPress={handleContinue}
+          className="active:opacity-80"
+          disabled={!selectedState}
+        >
+          <LinearGradient
+            colors={["#3b82f6", "#2563eb"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              borderRadius: 16,
+              padding: 18,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              shadowColor: "#3b82f6",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 12,
+              elevation: 6,
+            }}
+          >
+            <Text className="text-white font-bold text-lg">
+              View Cities
+            </Text>
+            <ChevronRight size={24} color="#ffffff" strokeWidth={3} />
+          </LinearGradient>
+        </Pressable>
+      </View>
     </View>
   );
 };

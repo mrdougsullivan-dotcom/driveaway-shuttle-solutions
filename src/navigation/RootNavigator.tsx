@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Platform } from "react-native";
 import type { RootStackParamList } from "@/navigation/types";
 import MapScreen from "@/screens/MapScreen";
 import CitiesScreen from "@/screens/CitiesScreen";
@@ -21,6 +22,11 @@ const RootNavigator = () => {
         headerTitleStyle: {
           fontWeight: "600",
         },
+        headerBackVisible: true,
+        headerBackTitle: "Back",
+        ...(Platform.OS === 'web' && {
+          headerLeft: undefined, // Use default back button on web
+        }),
       }}
     >
       <RootStack.Screen
