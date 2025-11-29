@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Reference Guide | Driveaway Shuttle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #050508;
+            --bg-secondary: #0c0c10;
+            --bg-card: #111116;
+            --bg-card-hover: #18181f;
+            --accent-amber: #f59e0b;
+            --accent-amber-glow: rgba(245, 158, 11, 0.25);
+            --accent-emerald: #10b981;
+            --accent-violet: #8b5cf6;
+            --accent-rose: #f43f5e;
+            --accent-sky: #0ea5e9;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --border: #1e293b;
+            --border-hover: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Background */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse 100% 80% at 0% 0%, rgba(139, 92, 246, 0.1), transparent 50%),
+                radial-gradient(ellipse 80% 60% at 100% 100%, rgba(245, 158, 11, 0.08), transparent 50%);
+        }
+
+        /* Header */
+        header {
+            padding: 1.5rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.5rem 0.875rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-amber);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Main content */
+        main {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Table of contents */
+        .toc {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .toc-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .toc-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.375rem 0.625rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toc-link:hover {
+            background: var(--bg-secondary);
+            color: var(--accent-amber);
+        }
+
+        /* Service section */
+        .service-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .service-title-area {
+            flex: 1;
+        }
+
+        .service-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .service-tagline {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .service-link {
+            font-size: 0.75rem;
+            color: var(--accent-amber);
+            text-decoration: none;
+            padding: 0.375rem 0.75rem;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .service-link:hover {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .service-body {
+            padding: 1.25rem;
+        }
+
+        .service-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Info blocks */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-block {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .info-block-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.625rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-block-title .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .dot-emerald { background: var(--accent-emerald); }
+        .dot-amber { background: var(--accent-amber); }
+        .dot-rose { background: var(--accent-rose); }
+        .dot-violet { background: var(--accent-violet); }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            padding: 0.375rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .info-list li::before {
+            content: "→";
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Service icons */
+        .icon-railway { background: linear-gradient(135deg, #0f0f0f, #262626); border: 1px solid #333; }
+        .icon-cloudflare { background: linear-gradient(135deg, #f48120, #faad3f); }
+        .icon-expo { background: linear-gradient(135deg, #000020, #4630eb); }
+        .icon-apple { background: linear-gradient(135deg, #1d1d1f, #3d3d3f); border: 1px solid #555; }
+        .icon-anthropic { background: linear-gradient(135deg, #d4a574, #c4956a); }
+        .icon-github { background: linear-gradient(135deg, #24292e, #40464d); }
+        .icon-vercel { background: linear-gradient(135deg, #000, #333); border: 1px solid #444; }
+        .icon-netlify { background: linear-gradient(135deg, #00c7b7, #00ad9f); }
+        .icon-prisma { background: linear-gradient(135deg, #2d3748, #4a5568); }
+        .icon-google { background: linear-gradient(135deg, #4285f4, #669df6); }
+        .icon-hono { background: linear-gradient(135deg, #ff6b35, #ff8c5a); }
+        .icon-bun { background: linear-gradient(135deg, #fbf0df, #f9e4c8); }
+        .icon-postgres { background: linear-gradient(135deg, #336791, #5a8fbf); }
+        .icon-openai { background: linear-gradient(135deg, #10a37f, #19c59a); }
+        .icon-better-auth { background: linear-gradient(135deg, #6366f1, #818cf8); }
+        .icon-tanstack { background: linear-gradient(135deg, #ff4154, #ff6b7a); }
+        .icon-nativewind { background: linear-gradient(135deg, #06b6d4, #22d3ee); }
+        .icon-zustand { background: linear-gradient(135deg, #463b3b, #5f5050); }
+
+        /* Code */
+        code {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            background: var(--bg-primary);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            color: var(--accent-amber);
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            max-width: 900px;
+            margin: 2rem auto 0;
+        }
+
+        .footer-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header, main {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>📚 Service Reference Guide</h1>
+                <p class="header-sub">What each service does and what to monitor</p>
+            </div>
+            <a href="index.html" class="back-link">← Back to Dashboard</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Table of Contents -->
+        <nav class="toc">
+            <div class="toc-title">Jump to Service</div>
+            <div class="toc-grid">
+                <a href="#railway" class="toc-link">🚂 Railway</a>
+                <a href="#cloudflare" class="toc-link">☁️ Cloudflare Pages</a>
+                <a href="#expo" class="toc-link">📱 Expo / EAS</a>
+                <a href="#appstore" class="toc-link">🍎 App Store Connect</a>
+                <a href="#anthropic" class="toc-link">🧠 Anthropic (Claude)</a>
+                <a href="#github" class="toc-link">🐙 GitHub</a>
+                <a href="#prisma" class="toc-link">◭ Prisma</a>
+                <a href="#hono" class="toc-link">🔥 Hono</a>
+                <a href="#betterauth" class="toc-link">🔐 Better Auth</a>
+                <a href="#tanstack" class="toc-link">⚛️ TanStack Query</a>
+                <a href="#nativewind" class="toc-link">💨 NativeWind</a>
+                <a href="#zustand" class="toc-link">🐻 Zustand</a>
+            </div>
+        </nav>
+
+        <!-- RAILWAY -->
+        <section class="service-section" id="railway">
+            <div class="service-header">
+                <div class="service-icon icon-railway">🚂</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Railway</h2>
+                    <p class="service-tagline">Backend Hosting + PostgreSQL Database</p>
+                </div>
+                <a href="https://railway.app/dashboard" class="service-link" target="_blank">Open Railway →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Railway hosts your Hono backend API and PostgreSQL database. It automatically deploys when you push to your connected Git branch and handles environment variables, scaling, and SSL certificates.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Deployment status (green = healthy)</li>
+                            <li>CPU & memory usage graphs</li>
+                            <li>Database storage usage</li>
+                            <li>Build logs for deployment errors</li>
+                            <li>Monthly usage vs. free tier limits</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>View live logs: click "Deployments" → latest</li>
+                            <li>Restart service: "Settings" → "Restart"</li>
+                            <li>Update env vars: "Variables" tab</li>
+                            <li>Connect to DB: copy <code>DATABASE_URL</code></li>
+                            <li>Redeploy: push to Git or click "Redeploy"</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Red deployment status = build failed</li>
+                            <li>High memory = potential memory leak</li>
+                            <li>Slow response times in metrics</li>
+                            <li>Database approaching storage limit</li>
+                            <li>Frequent restarts = crash loop</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLOUDFLARE PAGES -->
+        <section class="service-section" id="cloudflare">
+            <div class="service-header">
+                <div class="service-icon icon-cloudflare">☁️</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Cloudflare Pages</h2>
+                    <p class="service-tagline">Web App CDN & Static Hosting</p>
+                </div>
+                <a href="https://dash.cloudflare.com" class="service-link" target="_blank">Open Cloudflare →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Cloudflare Pages hosts the web export of your Expo app. It serves static files from edge locations worldwide for fast loading. You deploy using <code>npx wrangler pages deploy dist</code>.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Deployment history in "Pages" section</li>
+                            <li>Web Analytics (if enabled)</li>
+                            <li>Request volume and bandwidth</li>
+                            <li>Custom domain status & SSL</li>
+                            <li>Build logs for each deployment</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Deploy: <code>wrangler pages deploy dist</code></li>
+                            <li>Rollback: select previous deployment → "Rollback"</li>
+                            <li>Add domain: "Custom domains" tab</li>
+                            <li>View live site: click deployment URL</li>
+                            <li>Purge cache: "Caching" → "Purge Cache"</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Failed deployments in Pages list</li>
+                            <li>SSL certificate errors on custom domain</li>
+                            <li>High error rate in Analytics</li>
+                            <li>Old deployment still active after push</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXPO / EAS -->
+        <section class="service-section" id="expo">
+            <div class="service-header">
+                <div class="service-icon icon-expo">📱</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Expo / EAS</h2>
+                    <p class="service-tagline">React Native Builds & OTA Updates</p>
+                </div>
+                <a href="https://expo.dev" class="service-link" target="_blank">Open Expo →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Expo Application Services (EAS) builds your iOS and Android apps in the cloud, handles code signing, and manages over-the-air (OTA) updates.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Build status (queued, building, finished)</li>
+                            <li>Build logs for errors</li>
+                            <li>OTA update deployment status</li>
+                            <li>Credentials (certificates, provisioning)</li>
+                            <li>App version numbers</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Build iOS: <code>eas build -p ios</code></li>
+                            <li>Build Android: <code>eas build -p android</code></li>
+                            <li>Submit to stores: <code>eas submit</code></li>
+                            <li>OTA update: <code>eas update</code></li>
+                            <li>Download build artifacts from web dashboard</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Build failures (check logs)</li>
+                            <li>Expired certificates (iOS)</li>
+                            <li>Version mismatch between builds</li>
+                            <li>OTA updates not reaching users</li>
+                            <li>Long queue times</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- APP STORE CONNECT -->
+        <section class="service-section" id="appstore">
+            <div class="service-header">
+                <div class="service-icon icon-apple">🍎</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">App Store Connect</h2>
+                    <p class="service-tagline">iOS App Distribution & Analytics</p>
+                </div>
+                <a href="https://appstoreconnect.apple.com" class="service-link" target="_blank">Open App Store →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    App Store Connect manages your iOS app submission, TestFlight beta testing, app metadata, pricing, and analytics.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>App review status (Waiting, In Review, Approved)</li>
+                            <li>TestFlight builds and testers</li>
+                            <li>Crash reports in "Crashes" tab</li>
+                            <li>User reviews and ratings</li>
+                            <li>Download and sales analytics</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Submit new version: App Store tab → version</li>
+                            <li>Add TestFlight testers: TestFlight tab</li>
+                            <li>Reply to reviews: "Ratings and Reviews"</li>
+                            <li>Update screenshots/description</li>
+                            <li>Manage in-app purchases</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>App rejected (check Resolution Center)</li>
+                            <li>Spike in crash reports</li>
+                            <li>Negative reviews mentioning bugs</li>
+                            <li>Certificate expiration warnings</li>
+                            <li>Missing compliance declarations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ANTHROPIC -->
+        <section class="service-section" id="anthropic">
+            <div class="service-header">
+                <div class="service-icon icon-anthropic">🧠</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Anthropic (Claude)</h2>
+                    <p class="service-tagline">AI-Powered OCR & Contact Extraction</p>
+                </div>
+                <a href="https://console.anthropic.com" class="service-link" target="_blank">Open Anthropic →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Claude's vision API extracts contact information (name, phone, email) from uploaded images. It's used in the <code>/api/upload/extract-contact</code> endpoint. Requires <code>ANTHROPIC_API_KEY</code> env var.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>API usage and token consumption</li>
+                            <li>Monthly spending vs. budget</li>
+                            <li>Rate limit status</li>
+                            <li>API key permissions</li>
+                            <li>Error rates in API logs</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>View usage: "Usage" tab in console</li>
+                            <li>Generate new API key if compromised</li>
+                            <li>Set spending limits</li>
+                            <li>Check model availability</li>
+                            <li>Review API documentation for updates</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Unexpected usage spike</li>
+                            <li>Rate limit errors (429)</li>
+                            <li>API key authentication failures</li>
+                            <li>Approaching spending limit</li>
+                            <li>Model deprecation notices</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GITHUB -->
+        <section class="service-section" id="github">
+            <div class="service-header">
+                <div class="service-icon icon-github">🐙</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">GitHub</h2>
+                    <p class="service-tagline">Source Code Repository</p>
+                </div>
+                <a href="https://github.com" class="service-link" target="_blank">Open GitHub →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    GitHub stores your source code and triggers deployments to Railway when you push. It's the single source of truth for your codebase and collaboration history.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Recent commits and branches</li>
+                            <li>Pull request status</li>
+                            <li>GitHub Actions workflow runs</li>
+                            <li>Security alerts (Dependabot)</li>
+                            <li>Issues and project boards</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Push changes: <code>git push origin main</code></li>
+                            <li>Create branch for features</li>
+                            <li>Review and merge PRs</li>
+                            <li>Check Actions for CI/CD status</li>
+                            <li>Update Dependabot alerts</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Failed GitHub Actions workflows</li>
+                            <li>Security vulnerabilities flagged</li>
+                            <li>Merge conflicts in PRs</li>
+                            <li>Stale branches accumulating</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRISMA -->
+        <section class="service-section" id="prisma">
+            <div class="service-header">
+                <div class="service-icon icon-prisma">◭</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Prisma</h2>
+                    <p class="service-tagline">Database ORM & Migrations</p>
+                </div>
+                <a href="https://www.prisma.io/docs" class="service-link" target="_blank">View Docs →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Prisma is your database toolkit. It generates type-safe queries from <code>schema.prisma</code>, handles migrations, and provides Prisma Studio for visual database browsing. Your schema defines Users, Sessions, Drivers, and more.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Migration status (applied vs pending)</li>
+                            <li>Schema changes before deploying</li>
+                            <li>Query performance (N+1 issues)</li>
+                            <li>Generated client is up-to-date</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Generate client: <code>bunx prisma generate</code></li>
+                            <li>Create migration: <code>bunx prisma migrate dev</code></li>
+                            <li>Deploy migrations: <code>bunx prisma migrate deploy</code></li>
+                            <li>Open Studio: <code>bunx prisma studio</code></li>
+                            <li>Reset DB: <code>bunx prisma migrate reset</code></li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Migration failed to apply</li>
+                            <li>Schema drift (DB doesn't match schema)</li>
+                            <li>Slow queries in logs</li>
+                            <li>Type errors after schema change</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HONO -->
+        <section class="service-section" id="hono">
+            <div class="service-header">
+                <div class="service-icon icon-hono">🔥</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Hono</h2>
+                    <p class="service-tagline">Backend Web Framework</p>
+                </div>
+                <a href="https://hono.dev" class="service-link" target="_blank">View Docs →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Hono is your lightweight, fast web framework running on Bun. It handles routing, middleware (CORS, logging), and serves your API endpoints like <code>/api/drivers</code>, <code>/api/auth/*</code>, and <code>/api/upload</code>.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Server logs via Railway</li>
+                            <li>Response times for endpoints</li>
+                            <li>Error responses (4xx, 5xx)</li>
+                            <li>CORS issues from frontend</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Run locally: <code>bun run dev</code></li>
+                            <li>Test endpoint: <code>curl localhost:3000/health</code></li>
+                            <li>Add route: create file in <code>src/routes/</code></li>
+                            <li>Add middleware in <code>src/index.ts</code></li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>500 errors in server logs</li>
+                            <li>CORS blocked requests</li>
+                            <li>Unhandled promise rejections</li>
+                            <li>Memory leaks over time</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BETTER AUTH -->
+        <section class="service-section" id="betterauth">
+            <div class="service-header">
+                <div class="service-icon icon-better-auth">🔐</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Better Auth</h2>
+                    <p class="service-tagline">Authentication Library</p>
+                </div>
+                <a href="https://www.better-auth.com/docs" class="service-link" target="_blank">View Docs →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Better Auth handles user authentication with email/password. It manages sessions, cookies, and integrates with Prisma for user storage. Configured in <code>backend/src/auth.ts</code> with Expo plugin support.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>User sign-up/sign-in success rates</li>
+                            <li>Session validity and expiration</li>
+                            <li>Auth errors in server logs</li>
+                            <li>Trusted origins configuration</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Auth endpoints: <code>/api/auth/*</code></li>
+                            <li>Get session: <code>/api/auth/session</code></li>
+                            <li>Update trusted origins in <code>auth.ts</code></li>
+                            <li>Check <code>BETTER_AUTH_SECRET</code> is set</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Users can't sign in (check cookies)</li>
+                            <li>Session not persisting</li>
+                            <li>CORS errors on auth endpoints</li>
+                            <li>Missing <code>BETTER_AUTH_SECRET</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TANSTACK QUERY -->
+        <section class="service-section" id="tanstack">
+            <div class="service-header">
+                <div class="service-icon icon-tanstack">⚛️</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">TanStack Query</h2>
+                    <p class="service-tagline">Data Fetching & Caching</p>
+                </div>
+                <a href="https://tanstack.com/query/latest" class="service-link" target="_blank">View Docs →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    TanStack Query (React Query) manages server state in your React Native app. It handles caching, background refetching, optimistic updates, and loading/error states for API calls.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Query states (loading, error, success)</li>
+                            <li>Cache invalidation behavior</li>
+                            <li>Stale time vs. refetch intervals</li>
+                            <li>DevTools in development (if enabled)</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Use <code>useQuery</code> for fetching</li>
+                            <li>Use <code>useMutation</code> for updates</li>
+                            <li>Invalidate queries after mutations</li>
+                            <li>Configure in <code>src/lib/queryClient.ts</code></li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Infinite refetch loops</li>
+                            <li>Stale data after mutations</li>
+                            <li>Too many network requests</li>
+                            <li>Memory issues from large caches</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NATIVEWIND -->
+        <section class="service-section" id="nativewind">
+            <div class="service-header">
+                <div class="service-icon icon-nativewind">💨</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">NativeWind</h2>
+                    <p class="service-tagline">Tailwind CSS for React Native</p>
+                </div>
+                <a href="https://www.nativewind.dev" class="service-link" target="_blank">View Docs →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    NativeWind brings Tailwind CSS to React Native. Use utility classes like <code>className="bg-blue-500 p-4 rounded-lg"</code> for styling. Configured in <code>tailwind.config.js</code> and <code>global.css</code>.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>Styles applying correctly on all platforms</li>
+                            <li>Dark mode handling</li>
+                            <li>Custom theme values in config</li>
+                            <li>Build warnings about CSS</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Use <code>className</code> prop for styles</li>
+                            <li>Add custom colors in <code>tailwind.config.js</code></li>
+                            <li>Import <code>global.css</code> in entry file</li>
+                            <li>Use <code>cn()</code> utility for conditionals</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Styles not applying (check imports)</li>
+                            <li>Web vs native style differences</li>
+                            <li>Missing content paths in config</li>
+                            <li>Babel config issues</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZUSTAND -->
+        <section class="service-section" id="zustand">
+            <div class="service-header">
+                <div class="service-icon icon-zustand">🐻</div>
+                <div class="service-title-area">
+                    <h2 class="service-title">Zustand</h2>
+                    <p class="service-tagline">State Management</p>
+                </div>
+                <a href="https://docs.pmnd.rs/zustand" class="service-link" target="_blank">View Docs →</a>
+            </div>
+            <div class="service-body">
+                <p class="service-desc">
+                    Zustand is a lightweight state management library. Use it for global client state that doesn't need to be fetched from the server (TanStack Query handles that). Great for UI state, filters, and preferences.
+                </p>
+                <div class="info-grid">
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-emerald"></span> What to Monitor</div>
+                        <ul class="info-list">
+                            <li>State updates triggering re-renders</li>
+                            <li>Store organization and size</li>
+                            <li>Persistence working (if using)</li>
+                            <li>DevTools state inspection</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-amber"></span> Key Actions</div>
+                        <ul class="info-list">
+                            <li>Create store: <code>create((set) => ({...}))</code></li>
+                            <li>Use in components: <code>useStore()</code></li>
+                            <li>Use selectors for performance</li>
+                            <li>Add persist middleware for local storage</li>
+                        </ul>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-block-title"><span class="dot dot-rose"></span> Warning Signs</div>
+                        <ul class="info-list">
+                            <li>Excessive re-renders (use selectors)</li>
+                            <li>State not persisting on reload</li>
+                            <li>Circular dependencies in stores</li>
+                            <li>Large state causing performance issues</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="footer-text">
+            Driveaway Shuttle Solutions • Service Reference Guide
+        </p>
+    </footer>
+</body>
+</html>
+
+
+

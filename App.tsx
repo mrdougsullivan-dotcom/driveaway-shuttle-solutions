@@ -36,7 +36,7 @@ export default function App() {
           <SafeAreaProvider>
             <NavigationContainer>
               <RootStackNavigator />
-              <StatusBar style="auto" />
+              <StatusBar style="light" />
             </NavigationContainer>
           </SafeAreaProvider>
         </GestureHandlerRootView>

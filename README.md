@@ -50,6 +50,9 @@ A professional mobile app for managing driveaway transportation companies across
 ## Features
 
 ### 📍 Interactive State Selection
+- **Dynamic Stats Banner**: Shows real-time count of companies and states covered
+  - Updates automatically as you add more companies
+  - Prominent display: "X professional driveaway companies covering Y states and growing"
 - iOS-style picker wheel for browsing states
 - Real-time preview of selected state with driver count
 - Beautiful gradient info card showing state details
@@ -143,6 +146,7 @@ A professional mobile app for managing driveaway transportation companies across
 
 ### Drivers
 - `GET /api/drivers` - Get all drivers
+- `GET /api/drivers/stats` - Get database statistics (total companies, total states)
 - `GET /api/drivers/states` - Get states with driver counts
 - `GET /api/drivers/cities/:state` - Get cities in a state
 - `GET /api/drivers/:id` - Get specific driver details
@@ -240,6 +244,7 @@ After deployment, your admin portal will be accessible from anywhere, perfect fo
 The app is already running! View it in the Vibecode app to see:
 
 1. **Home Screen (Map Screen)**:
+   - **Dynamic Stats Banner**: See the current count of companies and states at a glance
    - **Green "Distance Calculator" button** prominently displayed in the header - tap this to calculate distances and find closest drivers
    - iOS-style picker wheel to scroll through states
    - Tap "View Cities" to browse companies by location

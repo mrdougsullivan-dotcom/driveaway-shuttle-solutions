@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Platform } from "react-native";
+import { Platform, Pressable, Text } from "react-native";
+import { ChevronLeft } from "lucide-react-native";
 import type { RootStackParamList } from "@/navigation/types";
 import MapScreen from "@/screens/MapScreen";
 import CitiesScreen from "@/screens/CitiesScreen";
@@ -10,29 +11,45 @@ import DistanceCalculatorScreen from "@/screens/DistanceCalculatorScreen";
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
+// Custom back button component
+const CustomBackButton = ({ onPress }: { onPress: () => void }) => (
+  <Pressable 
+    onPress={onPress} 
+    style={{ 
+      flexDirection: 'row', 
+      alignItems: 'center',
+      paddingRight: 16,
+      paddingVertical: 8,
+    }}
+  >
+    <ChevronLeft size={28} color="#ffffff" strokeWidth={2.5} />
+    <Text style={{ color: '#ffffff', fontSize: 17, fontWeight: '500' }}>Back</Text>
+  </Pressable>
+);
+
 const RootNavigator = () => {
   return (
     <RootStack.Navigator
       initialRouteName="MapScreen"
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         headerStyle: {
-          backgroundColor: "#f8fafc",
+          backgroundColor: "#1e293b",
         },
-        headerTintColor: "#1e293b",
+        headerTintColor: "#ffffff",
         headerTitleStyle: {
           fontWeight: "600",
         },
-        headerBackVisible: true,
-        headerBackTitle: "Back",
-        ...(Platform.OS === 'web' && {
-          headerLeft: undefined, // Use default back button on web
-        }),
-      }}
+        headerBackTitleVisible: false,
+        headerShadowVisible: true,
+        headerLeft: () => (
+          <CustomBackButton onPress={() => navigation.goBack()} />
+        ),
+      })}
     >
       <RootStack.Screen
         name="MapScreen"
         component={MapScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, headerLeft: () => null }}
       />
       <RootStack.Screen
         name="CitiesScreen"
@@ -57,7 +74,7 @@ const RootNavigator = () => {
       <RootStack.Screen
         name="DistanceCalculator"
         component={DistanceCalculatorScreen}
-        options={{ headerShown: false }}
+        options={{ title: "Distance Calculator" }}
       />
     </RootStack.Navigator>
   );

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driveaway Shuttle | Service Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #050508;
+            --bg-secondary: #0c0c10;
+            --bg-card: #111116;
+            --bg-card-hover: #18181f;
+            --accent-amber: #f59e0b;
+            --accent-amber-glow: rgba(245, 158, 11, 0.25);
+            --accent-emerald: #10b981;
+            --accent-violet: #8b5cf6;
+            --accent-rose: #f43f5e;
+            --accent-sky: #0ea5e9;
+            --accent-slate: #64748b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --border: #1e293b;
+            --border-hover: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Mesh gradient background */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse 100% 80% at 0% 0%, rgba(245, 158, 11, 0.12), transparent 50%),
+                radial-gradient(ellipse 80% 60% at 100% 20%, rgba(139, 92, 246, 0.08), transparent 50%),
+                radial-gradient(ellipse 60% 50% at 50% 100%, rgba(16, 185, 129, 0.06), transparent 50%);
+        }
+
+        /* Noise texture */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Header */
+        header {
+            padding: 1.5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-amber), #ea580c);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 0 24px var(--accent-amber-glow);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .time-display {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Main content */
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Guide link banner */
+        .guide-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(245, 158, 11, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .guide-link:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(245, 158, 11, 0.1));
+            border-color: var(--accent-violet);
+            transform: translateY(-1px);
+        }
+
+        .guide-icon {
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border-radius: 10px;
+        }
+
+        .guide-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+
+        .guide-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .guide-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .guide-arrow {
+            font-size: 1.25rem;
+            color: var(--accent-violet);
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+
+        .guide-link:hover .guide-arrow {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        /* Quick access strip */
+        .quick-strip {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.625rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-amber);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .quick-btn .icon {
+            font-size: 1rem;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 2.5rem;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.05s; }
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.15s; }
+        .section:nth-child(4) { animation-delay: 0.2s; }
+        .section:nth-child(5) { animation-delay: 0.25s; }
+        .section:nth-child(6) { animation-delay: 0.3s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            margin-bottom: 0.875rem;
+        }
+
+        .section-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .dot-amber { background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber-glow); }
+        .dot-emerald { background: var(--accent-emerald); }
+        .dot-violet { background: var(--accent-violet); }
+        .dot-rose { background: var(--accent-rose); }
+        .dot-sky { background: var(--accent-sky); }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+            gap: 0.75rem;
+        }
+
+        /* Service card */
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .service-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .service-card:hover .service-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+
+        /* Service icons */
+        .icon-railway { background: linear-gradient(135deg, #0f0f0f, #262626); border: 1px solid #333; }
+        .icon-cloudflare { background: linear-gradient(135deg, #f48120, #faad3f); }
+        .icon-expo { background: linear-gradient(135deg, #000020, #4630eb); }
+        .icon-apple { background: linear-gradient(135deg, #1d1d1f, #3d3d3f); border: 1px solid #555; }
+        .icon-anthropic { background: linear-gradient(135deg, #d4a574, #c4956a); }
+        .icon-github { background: linear-gradient(135deg, #24292e, #40464d); }
+        .icon-vercel { background: linear-gradient(135deg, #000, #333); border: 1px solid #444; }
+        .icon-netlify { background: linear-gradient(135deg, #00c7b7, #00ad9f); }
+        .icon-prisma { background: linear-gradient(135deg, #2d3748, #4a5568); }
+        .icon-google { background: linear-gradient(135deg, #4285f4, #669df6); }
+        .icon-hono { background: linear-gradient(135deg, #ff6b35, #ff8c5a); }
+        .icon-tanstack { background: linear-gradient(135deg, #ff4154, #ff6b7a); }
+        .icon-tailwind { background: linear-gradient(135deg, #06b6d4, #22d3ee); }
+        .icon-bun { background: linear-gradient(135deg, #fbf0df, #f9e4c8); }
+        .icon-postgres { background: linear-gradient(135deg, #336791, #5a8fbf); }
+        .icon-openai { background: linear-gradient(135deg, #10a37f, #19c59a); }
+        .icon-zustand { background: linear-gradient(135deg, #463b3b, #5f5050); }
+        .icon-npm { background: linear-gradient(135deg, #cb3837, #e74c4c); }
+        .icon-docs { background: linear-gradient(135deg, var(--accent-violet), #a78bfa); }
+
+        .service-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.125rem;
+            color: var(--text-primary);
+        }
+
+        .service-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .service-arrow {
+            color: var(--text-muted);
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        /* Environment info */
+        .env-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .env-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .env-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .env-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+            gap: 0.75rem;
+        }
+
+        .env-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .env-key {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .env-value {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        .footer-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .footer-hint code {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--accent-amber);
+            background: var(--bg-card);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+        }
+
+        /* Responsive - Tablet */
+        @media (max-width: 900px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .env-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Responsive - Mobile */
+        @media (max-width: 600px) {
+            header, main {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            header {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                display: none;
+            }
+
+            h1 {
+                font-size: 1.1rem;
+            }
+
+            .logo-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+
+            /* Guide link mobile */
+            .guide-link {
+                padding: 0.875rem 1rem;
+            }
+
+            .guide-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .guide-title {
+                font-size: 0.85rem;
+            }
+
+            .guide-desc {
+                font-size: 0.7rem;
+            }
+
+            /* Quick access mobile */
+            .quick-strip {
+                gap: 0.375rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .quick-btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+                flex: 1 1 calc(33.333% - 0.5rem);
+                min-width: 0;
+                justify-content: center;
+            }
+
+            .quick-btn .icon {
+                font-size: 0.9rem;
+            }
+
+            /* Env card mobile */
+            .env-card {
+                padding: 1rem;
+            }
+
+            .env-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .env-item {
+                padding: 0.5rem;
+            }
+
+            .env-key {
+                font-size: 0.6rem;
+                max-width: 140px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .env-value {
+                font-size: 0.65rem;
+            }
+
+            /* Cards mobile */
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 0.625rem;
+            }
+
+            .service-card {
+                padding: 0.875rem;
+            }
+
+            .service-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+
+            .service-name {
+                font-size: 0.85rem;
+            }
+
+            .service-desc {
+                font-size: 0.7rem;
+            }
+
+            /* Section headers mobile */
+            .section {
+                margin-bottom: 1.75rem;
+            }
+
+            .section-title {
+                font-size: 0.65rem;
+            }
+
+            /* Footer mobile */
+            footer {
+                padding: 1.5rem 1rem;
+            }
+
+            .footer-hint {
+                font-size: 0.65rem;
+            }
+
+            .footer-hint code {
+                font-size: 0.6rem;
+            }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 380px) {
+            .quick-btn {
+                flex: 1 1 calc(50% - 0.375rem);
+            }
+
+            .quick-btn span:last-child {
+                display: none;
+            }
+
+            .env-key {
+                max-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div class="noise"></div>
+
+    <header>
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="logo-icon">🚐</div>
+                <div class="brand">
+                    <h1>Driveaway Shuttle</h1>
+                    <span class="subtitle">Service Dashboard</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>All systems operational</span>
+                </div>
+                <span class="time-display" id="clock"></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Reference Guide Link -->
+        <a href="reference.html" class="guide-link">
+            <span class="guide-icon">📚</span>
+            <div class="guide-info">
+                <span class="guide-title">Service Reference Guide</span>
+                <span class="guide-desc">What each service does & what to monitor</span>
+            </div>
+            <span class="guide-arrow">→</span>
+        </a>
+
+        <!-- Quick Access -->
+        <div class="quick-strip">
+            <a href="https://railway.app/dashboard" class="quick-btn" target="_blank">
+                <span class="icon">🚂</span> Railway
+            </a>
+            <a href="https://dash.cloudflare.com" class="quick-btn" target="_blank">
+                <span class="icon">☁️</span> Cloudflare
+            </a>
+            <a href="https://expo.dev" class="quick-btn" target="_blank">
+                <span class="icon">📱</span> Expo
+            </a>
+            <a href="https://appstoreconnect.apple.com" class="quick-btn" target="_blank">
+                <span class="icon">🍎</span> App Store
+            </a>
+            <a href="https://github.com" class="quick-btn" target="_blank">
+                <span class="icon">🐙</span> GitHub
+            </a>
+            <a href="https://console.anthropic.com" class="quick-btn" target="_blank">
+                <span class="icon">🧠</span> Anthropic
+            </a>
+            <a href="https://analytics.google.com" class="quick-btn" target="_blank">
+                <span class="icon">📊</span> Analytics
+            </a>
+        </div>
+
+        <!-- Analytics & Traffic -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-dot dot-emerald"></div>
+                <h2 class="section-title">📊 Analytics & Traffic</h2>
+            </div>
+            <div class="cards-grid">
+                <a href="https://analytics.google.com" class="service-card" target="_blank">
+                    <div class="service-icon" style="background: linear-gradient(135deg, #f9ab00, #e37400);">📈</div>
+                    <div class="service-info">
+                        <div class="service-name">Google Analytics</div>
+                        <div class="service-desc">Website Traffic & User Behavior</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://dash.cloudflare.com/?to=/:account/:zone/analytics/traffic" class="service-card" target="_blank">
+                    <div class="service-icon icon-cloudflare">📊</div>
+                    <div class="service-info">
+                        <div class="service-name">Cloudflare Analytics</div>
+                        <div class="service-desc">Web Traffic & Performance</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://railway.app/dashboard" class="service-card" target="_blank">
+                    <div class="service-icon icon-railway">📉</div>
+                    <div class="service-info">
+                        <div class="service-name">Railway Metrics</div>
+                        <div class="service-desc">Backend Logs & Performance</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://appstoreconnect.apple.com/analytics" class="service-card" target="_blank">
+                    <div class="service-icon icon-apple">📱</div>
+                    <div class="service-info">
+                        <div class="service-name">App Store Analytics</div>
+                        <div class="service-desc">Downloads & App Usage</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://search.google.com/search-console" class="service-card" target="_blank">
+                    <div class="service-icon" style="background: linear-gradient(135deg, #4285f4, #34a853);">🔍</div>
+                    <div class="service-info">
+                        <div class="service-name">Search Console</div>
+                        <div class="service-desc">SEO & Search Performance</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://expo.dev" class="service-card" target="_blank">
+                    <div class="service-icon icon-expo">📲</div>
+                    <div class="service-info">
+                        <div class="service-name">Expo Insights</div>
+                        <div class="service-desc">App Crashes & Performance</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Hosting & Deployment -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-dot dot-amber"></div>
+                <h2 class="section-title">Hosting & Deployment</h2>
+            </div>
+            <div class="cards-grid">
+                <a href="https://railway.app/dashboard" class="service-card" target="_blank">
+                    <div class="service-icon icon-railway">🚂</div>
+                    <div class="service-info">
+                        <div class="service-name">Railway</div>
+                        <div class="service-desc">Backend + PostgreSQL Database</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://dash.cloudflare.com" class="service-card" target="_blank">
+                    <div class="service-icon icon-cloudflare">☁️</div>
+                    <div class="service-info">
+                        <div class="service-name">Cloudflare Pages</div>
+                        <div class="service-desc">Web App CDN & Hosting</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://expo.dev" class="service-card" target="_blank">
+                    <div class="service-icon icon-expo">📱</div>
+                    <div class="service-info">
+                        <div class="service-name">Expo / EAS</div>
+                        <div class="service-desc">React Native Builds & OTA Updates</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://appstoreconnect.apple.com" class="service-card" target="_blank">
+                    <div class="service-icon icon-apple">🍎</div>
+                    <div class="service-info">
+                        <div class="service-name">App Store Connect</div>
+                        <div class="service-desc">iOS App Distribution</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://vercel.com/dashboard" class="service-card" target="_blank">
+                    <div class="service-icon icon-vercel">▲</div>
+                    <div class="service-info">
+                        <div class="service-name">Vercel</div>
+                        <div class="service-desc">Alternative Web Deployment</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://app.netlify.com" class="service-card" target="_blank">
+                    <div class="service-icon icon-netlify">◆</div>
+                    <div class="service-info">
+                        <div class="service-name">Netlify</div>
+                        <div class="service-desc">Alternative Web Deployment</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- AI & External APIs -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-dot dot-violet"></div>
+                <h2 class="section-title">AI & External APIs</h2>
+            </div>
+            <div class="cards-grid">
+                <a href="https://console.anthropic.com" class="service-card" target="_blank">
+                    <div class="service-icon icon-anthropic">🧠</div>
+                    <div class="service-info">
+                        <div class="service-name">Anthropic (Claude)</div>
+                        <div class="service-desc">OCR & Contact Extraction</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://platform.openai.com" class="service-card" target="_blank">
+                    <div class="service-icon icon-openai">🤖</div>
+                    <div class="service-info">
+                        <div class="service-name">OpenAI</div>
+                        <div class="service-desc">GPT API (Installed)</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://console.cloud.google.com/google/maps-apis" class="service-card" target="_blank">
+                    <div class="service-icon icon-google">🗺️</div>
+                    <div class="service-info">
+                        <div class="service-name">Google Maps</div>
+                        <div class="service-desc">Geocoding & Directions</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Development & Code -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-dot dot-emerald"></div>
+                <h2 class="section-title">Development & Code</h2>
+            </div>
+            <div class="cards-grid">
+                <a href="https://github.com" class="service-card" target="_blank">
+                    <div class="service-icon icon-github">🐙</div>
+                    <div class="service-info">
+                        <div class="service-name">GitHub</div>
+                        <div class="service-desc">Source Code Repository</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://www.prisma.io/studio" class="service-card" target="_blank">
+                    <div class="service-icon icon-prisma">◭</div>
+                    <div class="service-info">
+                        <div class="service-name">Prisma Studio</div>
+                        <div class="service-desc">Database GUI (run locally)</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://www.npmjs.com/package/hono" class="service-card" target="_blank">
+                    <div class="service-icon icon-hono">🔥</div>
+                    <div class="service-info">
+                        <div class="service-name">Hono</div>
+                        <div class="service-desc">Backend Web Framework</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://bun.sh" class="service-card" target="_blank">
+                    <div class="service-icon icon-bun">🥟</div>
+                    <div class="service-info">
+                        <div class="service-name">Bun</div>
+                        <div class="service-desc">JavaScript Runtime</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Documentation & Frameworks -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-dot dot-sky"></div>
+                <h2 class="section-title">Documentation & Frameworks</h2>
+            </div>
+            <div class="cards-grid">
+                <a href="https://docs.expo.dev" class="service-card" target="_blank">
+                    <div class="service-icon icon-docs">📖</div>
+                    <div class="service-info">
+                        <div class="service-name">Expo Docs</div>
+                        <div class="service-desc">SDK 53 Documentation</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://www.nativewind.dev" class="service-card" target="_blank">
+                    <div class="service-icon icon-tailwind">💨</div>
+                    <div class="service-info">
+                        <div class="service-name">NativeWind</div>
+                        <div class="service-desc">Tailwind CSS for React Native</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://tanstack.com/query/latest" class="service-card" target="_blank">
+                    <div class="service-icon icon-tanstack">⚛️</div>
+                    <div class="service-info">
+                        <div class="service-name">TanStack Query</div>
+                        <div class="service-desc">Data Fetching & Caching</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://docs.pmnd.rs/zustand" class="service-card" target="_blank">
+                    <div class="service-icon icon-zustand">🐻</div>
+                    <div class="service-info">
+                        <div class="service-name">Zustand</div>
+                        <div class="service-desc">State Management</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://www.better-auth.com/docs" class="service-card" target="_blank">
+                    <div class="service-icon icon-docs">🔐</div>
+                    <div class="service-info">
+                        <div class="service-name">Better Auth</div>
+                        <div class="service-desc">Authentication Library</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://www.prisma.io/docs" class="service-card" target="_blank">
+                    <div class="service-icon icon-prisma">◭</div>
+                    <div class="service-info">
+                        <div class="service-name">Prisma Docs</div>
+                        <div class="service-desc">Database ORM</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://hono.dev" class="service-card" target="_blank">
+                    <div class="service-icon icon-hono">🔥</div>
+                    <div class="service-info">
+                        <div class="service-name">Hono Docs</div>
+                        <div class="service-desc">Web Framework Docs</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+
+                <a href="https://reactnative.dev/docs/getting-started" class="service-card" target="_blank">
+                    <div class="service-icon icon-docs">📱</div>
+                    <div class="service-info">
+                        <div class="service-name">React Native Docs</div>
+                        <div class="service-desc">RN 0.79 Documentation</div>
+                    </div>
+                    <span class="service-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p class="footer-hint">
+            Edit <code>dashboard/index.html</code> to customize • Built for Driveaway Shuttle Solutions
+        </p>
+    </footer>
+
+    <script>
+        // Live clock
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('clock').textContent = now.toLocaleString('en-US', options);
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                const shortcuts = {
+                    '1': 'https://railway.app/dashboard',
+                    '2': 'https://dash.cloudflare.com',
+                    '3': 'https://expo.dev',
+                    '4': 'https://appstoreconnect.apple.com',
+                    '5': 'https://github.com',
+                    '6': 'https://console.anthropic.com'
+                };
+                if (shortcuts[e.key]) {
+                    e.preventDefault();
+                    window.open(shortcuts[e.key], '_blank');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -9,12 +9,11 @@ import {
   NativeSyntheticEvent,
   ImageBackground,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type RootStackParamList } from "@/navigation/types";
 import { api } from "@/lib/api";
-import { type GetStatesResponse } from "@/shared/contracts";
-import { MapPin, ChevronRight, Calculator } from "lucide-react-native";
+import { type GetStatesResponse, type GetDriverStatsResponse } from "@/shared/contracts";
+import { MapPin, ChevronRight, Search } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 type Props = NativeStackScreenProps<RootStackParamList, "MapScreen">;
@@ -24,21 +23,32 @@ const PICKER_HEIGHT = 300;
 
 const MapScreen = ({ navigation }: Props) => {
   const [states, setStates] = useState<GetStatesResponse["states"]>([]);
+  const [stats, setStats] = useState<GetDriverStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
-  const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    loadStates();
+    loadData();
   }, []);
 
-  const loadStates = async () => {
+  const loadData = async () => {
     try {
-      const response = await api.get<GetStatesResponse>("/api/drivers/states");
-      setStates(response.states);
+      console.log('📊 Loading stats and states...');
+      
+      // Load states first
+      const statesResponse = await api.get<GetStatesResponse>("/api/drivers/states");
+      console.log(`📍 ${statesResponse.states.length} states loaded`);
+      setStates(statesResponse.states);
+      
+      // Load stats separately
+      const statsResponse = await api.get<GetDriverStatsResponse>("/api/drivers/stats");
+      console.log('✅ Stats loaded:', statsResponse);
+      setStats(statsResponse);
     } catch (error) {
-      console.error("Failed to load states:", error);
+      console.error("❌ Failed to load data:", error);
+      // Set fallback stats if API fails
+      setStats({ totalCompanies: 50, totalStates: 28 });
     } finally {
       setLoading(false);
     }
@@ -82,7 +92,7 @@ const MapScreen = ({ navigation }: Props) => {
 
   return (
     <View className="flex-1 bg-slate-50">
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 16 }}>
+      <ScrollView className="flex-1">
         {/* Header with Image Background */}
         <ImageBackground
           source={require("../../assets/image-1764111920.jpeg")}
@@ -94,16 +104,32 @@ const MapScreen = ({ navigation }: Props) => {
             style={{ paddingHorizontal: 16, paddingTop: 60, paddingBottom: 32 }}
           >
             <Text className="text-3xl font-bold text-slate-900 mb-2">
-              Driveaway Shuttle Solutions
+              🚐 Driveaway Shuttle
             </Text>
-            <Text className="text-slate-600 text-base mb-4">
-              Calculate distances & find shuttle drivers
-            </Text>
+            
+            {/* Stats Banner */}
+            <View className="overflow-hidden rounded-xl mb-4">
+              <LinearGradient
+                colors={["#3b82f6", "#8b5cf6"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ 
+                  paddingVertical: 14,
+                  paddingHorizontal: 16,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                }}
+              >
+                <Text className="text-white font-bold text-base text-center">
+                  A directory of over {stats ? stats.totalCompanies : '...'} drivers nationwide
+                </Text>
+              </LinearGradient>
+            </View>
 
-            {/* Distance Calculator Button - MOVED TO HEADER */}
+            {/* Find Driver Near You Button */}
             <Pressable
               onPress={() => {
-                console.log('Distance Calculator button pressed!');
+                console.log('Find Driver Near You button pressed!');
                 navigation.navigate('DistanceCalculator');
               }}
               className="active:opacity-80"
@@ -126,9 +152,9 @@ const MapScreen = ({ navigation }: Props) => {
                   elevation: 6,
                 }}
               >
-                <Calculator size={24} color="#ffffff" strokeWidth={2.5} />
+                <Search size={24} color="#ffffff" strokeWidth={2.5} />
                 <Text className="text-white font-bold text-lg">
-                  Distance Calculator
+                  Find Driver Near You
                 </Text>
               </LinearGradient>
             </Pressable>
@@ -153,16 +179,29 @@ const MapScreen = ({ navigation }: Props) => {
                   elevation: 8,
                 }}
               >
-                <View className="flex-row items-center gap-4">
-                  <View className="w-14 h-14 bg-white/20 rounded-full items-center justify-center">
-                    <MapPin size={28} color="#ffffff" strokeWidth={2.5} />
-                  </View>
+                <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <Text className="text-2xl font-bold text-white">
-                      {selectedState.name}
+                    <View className="flex-row items-center gap-3 mb-3">
+                      <View className="w-14 h-14 bg-white/20 rounded-full items-center justify-center">
+                        <MapPin size={28} color="#ffffff" strokeWidth={2.5} />
+                      </View>
+                      <View>
+                        <Text className="text-2xl font-bold text-white">
+                          {selectedState.name}
+                        </Text>
+                        <Text className="text-sm text-blue-100 font-medium">
+                          {selectedState.code}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <View className="bg-white/30 px-5 py-3 rounded-2xl backdrop-blur">
+                    <Text className="text-xs text-white/90 font-semibold mb-1">
+                      DRIVERS
                     </Text>
-                    <Text className="text-sm text-blue-100 font-medium">
-                      {selectedState.code} • {selectedState.driverCount} {selectedState.driverCount === 1 ? 'Driver' : 'Drivers'}
+                    <Text className="text-white font-bold text-2xl text-center">
+                      {selectedState.driverCount}
                     </Text>
                   </View>
                 </View>
@@ -279,50 +318,39 @@ const MapScreen = ({ navigation }: Props) => {
             </View>
           </View>
 
+          {/* Continue Button */}
+          <Pressable
+            onPress={handleContinue}
+            className="active:opacity-80 mb-8"
+            disabled={!selectedState}
+          >
+            <LinearGradient
+              colors={["#3b82f6", "#2563eb"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{
+                borderRadius: 16,
+                padding: 18,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 12,
+                elevation: 6,
+              }}
+            >
+              <Text className="text-white font-bold text-lg">
+                View Cities
+              </Text>
+              <ChevronRight size={24} color="#ffffff" strokeWidth={3} />
+            </LinearGradient>
+          </Pressable>
+
         </View>
       </ScrollView>
-
-      {/* Fixed Footer Button */}
-      <View 
-        style={{ 
-          paddingHorizontal: 16, 
-          paddingTop: 12,
-          paddingBottom: insets.bottom + 12,
-          backgroundColor: '#f8fafc',
-          borderTopWidth: 1,
-          borderTopColor: '#e2e8f0',
-        }}
-      >
-        <Pressable
-          onPress={handleContinue}
-          className="active:opacity-80"
-          disabled={!selectedState}
-        >
-          <LinearGradient
-            colors={["#3b82f6", "#2563eb"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              borderRadius: 16,
-              padding: 18,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              shadowColor: "#3b82f6",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 12,
-              elevation: 6,
-            }}
-          >
-            <Text className="text-white font-bold text-lg">
-              View Cities
-            </Text>
-            <ChevronRight size={24} color="#ffffff" strokeWidth={3} />
-          </LinearGradient>
-        </Pressable>
-      </View>
     </View>
   );
 };

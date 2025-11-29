@@ -18,9 +18,9 @@
         "resourceClass": "m-medium"
       }
     },
-     "production": {
+    "production": {
       "env": {
-        "EXPO_PUBLIC_VIBECODE_BACKEND_URL": "https://driveaway-backend-production.up.railway.app"
+        "EXPO_PUBLIC_VIBECODE_BACKEND_URL": "https://preview-cmmxxplzffhs.share.sandbox.dev"
       },
       "ios": {
         "resourceClass": "m-medium"

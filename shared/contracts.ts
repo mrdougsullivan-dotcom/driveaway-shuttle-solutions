@@ -45,6 +45,7 @@ export const driverSchema = z.object({
   status: z.enum(["available", "on_trip", "offline"]),
   vehicleType: z.string().nullable(),
   serviceLocations: z.string().nullable(),
+  notes: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -91,6 +92,7 @@ export const createDriverRequestSchema = z.object({
   status: z.enum(["available", "on_trip", "offline"]),
   vehicleType: z.string().optional(),
   serviceLocations: z.string().optional(),
+  notes: z.string().optional(),
 });
 export type CreateDriverRequest = z.infer<typeof createDriverRequestSchema>;
 export const createDriverResponseSchema = z.object({
@@ -117,3 +119,10 @@ export const extractContactResponseSchema = z.object({
   serviceLocations: z.array(z.string()).optional(),
 });
 export type ExtractContactResponse = z.infer<typeof extractContactResponseSchema>;
+
+// GET /api/drivers/stats
+export const getDriverStatsResponseSchema = z.object({
+  totalCompanies: z.number(),
+  totalStates: z.number(),
+});
+export type GetDriverStatsResponse = z.infer<typeof getDriverStatsResponseSchema>;

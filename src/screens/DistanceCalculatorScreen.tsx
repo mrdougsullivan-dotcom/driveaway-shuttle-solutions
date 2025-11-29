@@ -38,10 +38,10 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
   const [result, setResult] = useState<DistanceResult | null>(null);
   const [error, setError] = useState('');
 
-  // Cache for geocoding results to avoid repeated API calls
-  const geocodeCache = React.useRef<Map<string, { lat: number; lng: number }>>(new Map());
+  // Note: Geocoding cache is now handled server-side for better performance
 
   // Calculate distance using routing API for actual driving distance
+  // OPTIMIZED: Uses parallel geocoding and pre-cached driver locations
   const calculateDistance = async () => {
     if (!dropOffCity.trim() || !pickupCity.trim()) {
       setError('Please enter both cities');
@@ -53,9 +53,18 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
     setResult(null);
 
     try {
-      // Get coordinates for both cities using a geocoding service
-      const fromCoords = await geocodeCity(dropOffCity);
-      const toCoords = await geocodeCity(pickupCity);
+      // OPTIMIZATION: Geocode both cities in a single API call (parallel)
+      const geocodeResponse = await api.post<{
+        success: boolean;
+        city1: { lat: number; lng: number } | null;
+        city2: { lat: number; lng: number } | null;
+      }>('/api/geocode/parallel', {
+        city1: dropOffCity,
+        city2: pickupCity
+      });
+
+      const fromCoords = geocodeResponse.city1;
+      const toCoords = geocodeResponse.city2;
 
       if (!fromCoords || !toCoords) {
         setError('Could not find one or both cities. Please check spelling and include state (e.g., "Macungie, PA")');
@@ -63,18 +72,35 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
         return;
       }
 
-      // Get driving distance using routing API
-      const routingResponse = await api.post<{
-        success: boolean;
-        distanceMiles?: number;
-        durationSeconds?: number;
-        estimated?: boolean;
-      }>('/api/routing/distance', {
-        fromLat: fromCoords.lat,
-        fromLng: fromCoords.lng,
-        toLat: toCoords.lat,
-        toLng: toCoords.lng
-      });
+      // Get driving distance and closest driver in parallel
+      const [routingResponse, closestDriverResponse] = await Promise.all([
+        api.post<{
+          success: boolean;
+          distanceMiles?: number;
+          durationSeconds?: number;
+          estimated?: boolean;
+        }>('/api/routing/distance', {
+          fromLat: fromCoords.lat,
+          fromLng: fromCoords.lng,
+          toLat: toCoords.lat,
+          toLng: toCoords.lng
+        }),
+        // OPTIMIZATION: Use new closest-driver endpoint with pre-cached locations
+        api.post<{
+          success: boolean;
+          closestDriver: {
+            id: string;
+            name: string;
+            city: string;
+            state: string;
+            phoneNumber: string | null;
+            distance: number;
+          } | null;
+        }>('/api/geocode/closest-driver', {
+          lat: toCoords.lat,
+          lng: toCoords.lng
+        })
+      ]);
 
       if (!routingResponse.success || !routingResponse.distanceMiles) {
         setError('Could not calculate driving distance. Please try again.');
@@ -90,8 +116,25 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
       const minutes = Math.round((durationSeconds % 3600) / 60);
       const duration = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 
-      // Find closest driver to pickup location
-      const closestDriver = await findClosestDriver(toCoords);
+      // Format closest driver result
+      let closestDriver: { driver: Driver; distance: number } | undefined;
+      if (closestDriverResponse.success && closestDriverResponse.closestDriver) {
+        const cd = closestDriverResponse.closestDriver;
+        closestDriver = {
+          driver: {
+            id: cd.id,
+            name: cd.name,
+            phoneNumber: cd.phoneNumber,
+            email: null,
+            state: cd.state,
+            city: cd.city,
+            status: "available",
+            vehicleType: null,
+            serviceLocations: null
+          },
+          distance: cd.distance
+        };
+      }
 
       setResult({
         distance: Math.round(distance),
@@ -108,100 +151,9 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
     }
   };
 
-  // Find closest driver to a given location
-  const findClosestDriver = async (coords: { lat: number; lng: number }) => {
-    try {
-      // Fetch all drivers from the backend
-      const response = await api.get<{ drivers: Driver[] }>('/api/drivers');
-      const drivers = response.drivers;
-
-      if (!drivers || drivers.length === 0) {
-        return undefined;
-      }
-
-      // Get unique cities and check cache first
-      const uniqueCities = Array.from(new Set(drivers.map(d => `${d.city}, ${d.state}`)));
-      const citiesToGeocode: string[] = [];
-      const cityCoordinates = new Map<string, { lat: number; lng: number }>();
-
-      // Check cache for each city
-      for (const cityState of uniqueCities) {
-        if (geocodeCache.current.has(cityState)) {
-          cityCoordinates.set(cityState, geocodeCache.current.get(cityState)!);
-        } else {
-          citiesToGeocode.push(cityState);
-        }
-      }
-
-      // Batch geocode remaining cities using backend API
-      if (citiesToGeocode.length > 0) {
-        const geocodeResponse = await api.post<{
-          success: boolean;
-          results: Record<string, { lat: number; lng: number } | null>
-        }>('/api/geocode/batch', { cities: citiesToGeocode });
-
-        if (geocodeResponse.success && geocodeResponse.results) {
-          Object.entries(geocodeResponse.results).forEach(([cityState, coords]) => {
-            if (coords) {
-              cityCoordinates.set(cityState, coords);
-              geocodeCache.current.set(cityState, coords);
-            }
-          });
-        }
-      }
-
-      // Calculate distance from each driver's location to the pickup point
-      let closestDriver: Driver | null = null;
-      let minDistance = Infinity;
-
-      for (const driver of drivers) {
-        const cityState = `${driver.city}, ${driver.state}`;
-        const driverCoords = cityCoordinates.get(cityState);
-
-        if (driverCoords) {
-          const dist = haversineDistance(
-            coords.lat,
-            coords.lng,
-            driverCoords.lat,
-            driverCoords.lng
-          );
-
-          if (dist < minDistance) {
-            minDistance = dist;
-            closestDriver = driver;
-          }
-        }
-      }
-
-      if (closestDriver) {
-        return {
-          driver: closestDriver,
-          distance: Math.round(minDistance)
-        };
-      }
-
-      return undefined;
-    } catch (error) {
-      console.error('Failed to find closest driver:', error);
-      return undefined;
-    }
-  };
-
-  // Geocode with caching to avoid repeated API calls
-  const geocodeCityWithCache = async (city: string): Promise<{ lat: number; lng: number } | null> => {
-    // Check cache first
-    if (geocodeCache.current.has(city)) {
-      return geocodeCache.current.get(city)!;
-    }
-
-    // If not in cache, geocode and store
-    const coords = await geocodeCity(city);
-    if (coords) {
-      geocodeCache.current.set(city, coords);
-    }
-
-    return coords;
-  };
+  // Legacy functions kept for reference but no longer used
+  // The new /api/geocode/closest-driver endpoint handles this server-side
+  // which is MUCH faster because driver locations are pre-cached on the server
 
   // Geocode city using backend API (handles rate limiting and caching)
   const geocodeCity = async (city: string): Promise<{ lat: number; lng: number } | null> => {
@@ -221,24 +173,7 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
     }
   };
 
-  // Haversine formula to calculate distance between two coordinates
-  const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 3959; // Earth's radius in miles
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const toRad = (degrees: number): number => {
-    return degrees * (Math.PI / 180);
-  };
+  // Note: Haversine distance calculation is now handled server-side
 
   const clearForm = () => {
     setDropOffCity('');
@@ -279,7 +214,7 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
             </Text>
           </View>
           <Text className="text-blue-100 text-base">
-            Calculate distance from drop-off to pickup location
+            Calculate distance from pickup to drop-off location
           </Text>
         </LinearGradient>
 
@@ -288,10 +223,30 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
           <View className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
             <Text className="text-blue-900 font-semibold mb-2">How to use:</Text>
             <Text className="text-blue-800 text-sm">
-              1. Enter your vehicle drop-off city (where you deliver the load)
-              {'\n'}2. Enter the pickup city (where shuttle drivers are located)
+              1. Enter the pickup city (where shuttle drivers are located)
+              {'\n'}2. Enter your vehicle drop-off city (where you deliver the load)
               {'\n'}3. Tap Calculate to see the distance
             </Text>
+          </View>
+
+          {/* Pickup Location */}
+          <View className="mb-6">
+            <View className="flex-row items-center gap-2 mb-2">
+              <Navigation size={20} color="#64748b" />
+              <Text className="text-slate-700 font-semibold text-lg">
+                Pickup Location
+              </Text>
+            </View>
+            <TextInput
+              value={pickupCity}
+              onChangeText={setPickupCity}
+              placeholder="e.g., Hollidaysburg, PA"
+              className="bg-white border-2 border-slate-300 rounded-xl px-4 py-4 text-lg text-slate-900"
+              placeholderTextColor="#94a3b8"
+              autoCapitalize="words"
+              autoCorrect={false}
+              textContentType="addressCity"
+            />
           </View>
 
           {/* Drop-off Location */}
@@ -312,32 +267,6 @@ const DistanceCalculatorScreen = ({ navigation }: Props) => {
               autoCorrect={false}
               textContentType="addressCity"
             />
-            <Text className="text-slate-500 text-sm mt-1 ml-1">
-              Where you&apos;re delivering the vehicle
-            </Text>
-          </View>
-
-          {/* Pickup Location */}
-          <View className="mb-6">
-            <View className="flex-row items-center gap-2 mb-2">
-              <Navigation size={20} color="#64748b" />
-              <Text className="text-slate-700 font-semibold text-lg">
-                Shuttle Pickup Location
-              </Text>
-            </View>
-            <TextInput
-              value={pickupCity}
-              onChangeText={setPickupCity}
-              placeholder="e.g., Hollidaysburg, PA"
-              className="bg-white border-2 border-slate-300 rounded-xl px-4 py-4 text-lg text-slate-900"
-              placeholderTextColor="#94a3b8"
-              autoCapitalize="words"
-              autoCorrect={false}
-              textContentType="addressCity"
-            />
-            <Text className="text-slate-500 text-sm mt-1 ml-1">
-              Where shuttle drivers are located
-            </Text>
           </View>
 
           {/* Calculate Button */}

@@ -17,6 +17,7 @@ import { api } from "@/lib/api";
 import { LinearGradient } from "expo-linear-gradient";
 import { Plus, Trash2, Users, MapPin, UserCircle, Car, Camera, Upload } from "lucide-react-native";
 import * as ImagePicker from 'expo-image-picker';
+import AuthGuard from "@/components/AuthGuard";
 
 type Props = NativeStackScreenProps<RootStackParamList, "AdminScreen">;
 
@@ -30,6 +31,7 @@ type Driver = {
   status: "available" | "on_trip" | "offline";
   vehicleType: string | null;
   serviceLocations: string | null;
+  notes: string | null;
 };
 
 type User = {
@@ -62,6 +64,7 @@ const AdminScreen = ({ navigation }: Props) => {
     status: "available" | "on_trip" | "offline";
     vehicleType: string;
     serviceLocations: string;
+    notes: string;
   }>({
     name: "",
     phoneNumber: "",
@@ -71,6 +74,7 @@ const AdminScreen = ({ navigation }: Props) => {
     status: "available",
     vehicleType: "Van",
     serviceLocations: "",
+    notes: "",
   });
 
   // User form state
@@ -214,6 +218,7 @@ const AdminScreen = ({ navigation }: Props) => {
         status: "available" as "available" | "on_trip" | "offline",
         vehicleType: "Van",
         serviceLocations: "",
+        notes: "",
       });
       await loadData(); // Refresh data
     } catch (error) {
@@ -243,6 +248,7 @@ const AdminScreen = ({ navigation }: Props) => {
       status: driver.status,
       vehicleType: driver.vehicleType || "Van",
       serviceLocations: serviceLocationsStr,
+      notes: driver.notes || "",
     });
     setEditingDriverId(driver.id);
     setShowAddDriverForm(true);
@@ -326,11 +332,12 @@ const AdminScreen = ({ navigation }: Props) => {
   }
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-slate-50"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-    >
+    <AuthGuard>
+      <KeyboardAvoidingView
+        className="flex-1 bg-slate-50"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      >
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }} keyboardShouldPersistTaps="handled">
         {/* Header */}
         <View className="mb-6">
@@ -505,6 +512,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   value={newDriver.name}
                   onChangeText={(text) => setNewDriver({ ...newDriver, name: text })}
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -516,6 +524,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   onChangeText={(text) => setNewDriver({ ...newDriver, phoneNumber: text })}
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
                   keyboardType="phone-pad"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -528,6 +537,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -539,6 +549,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   onChangeText={(text) => setNewDriver({ ...newDriver, state: text })}
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
                   autoCapitalize="words"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -549,6 +560,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   value={newDriver.city}
                   onChangeText={(text) => setNewDriver({ ...newDriver, city: text })}
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -559,6 +571,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   value={newDriver.vehicleType}
                   onChangeText={(text) => setNewDriver({ ...newDriver, vehicleType: text })}
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -571,9 +584,26 @@ const AdminScreen = ({ navigation }: Props) => {
                   placeholder="e.g., Houston, TX, Austin, TX"
                   value={newDriver.serviceLocations}
                   onChangeText={(text) => setNewDriver({ ...newDriver, serviceLocations: text })}
-                  className="bg-slate-50 rounded-xl p-3 mb-4 text-slate-900"
+                  className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
                   multiline
                   numberOfLines={2}
+                  style={{ outline: 'none' } as any}
+                />
+
+                <Text className="text-sm font-semibold text-slate-700 mb-1">
+                  Notes
+                </Text>
+                <Text className="text-xs text-slate-500 mb-1">
+                  Additional information about this driver
+                </Text>
+                <TextInput
+                  placeholder="e.g., Prefers long-distance trips, Has CDL license, etc."
+                  value={newDriver.notes}
+                  onChangeText={(text) => setNewDriver({ ...newDriver, notes: text })}
+                  className="bg-slate-50 rounded-xl p-3 mb-4 text-slate-900"
+                  multiline
+                  numberOfLines={3}
+                  style={{ outline: 'none' } as any}
                 />
 
                 <View className="flex-row gap-3">
@@ -591,6 +621,7 @@ const AdminScreen = ({ navigation }: Props) => {
                         status: "available" as "available" | "on_trip" | "offline",
                         vehicleType: "Van",
                         serviceLocations: "",
+                        notes: "",
                       });
                     }}
                     className="flex-1 bg-slate-200 rounded-xl p-3 active:opacity-70"
@@ -754,6 +785,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   value={newUser.name}
                   onChangeText={(text) => setNewUser({ ...newUser, name: text })}
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -766,6 +798,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   className="bg-slate-50 rounded-xl p-3 mb-3 text-slate-900"
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  style={{ outline: 'none' } as any}
                 />
 
                 <Text className="text-sm font-semibold text-slate-700 mb-1">
@@ -777,6 +810,7 @@ const AdminScreen = ({ navigation }: Props) => {
                   onChangeText={(text) => setNewUser({ ...newUser, password: text })}
                   className="bg-slate-50 rounded-xl p-3 mb-4 text-slate-900"
                   secureTextEntry
+                  style={{ outline: 'none' } as any}
                 />
 
                 <View className="flex-row gap-3">
@@ -856,7 +890,8 @@ const AdminScreen = ({ navigation }: Props) => {
           </>
         )}
       </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </AuthGuard>
   );
 };
 

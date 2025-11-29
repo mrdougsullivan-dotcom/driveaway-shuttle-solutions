@@ -11,7 +11,7 @@ import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type RootStackParamList } from "@/navigation/types";
 import { api } from "@/lib/api";
 import { type GetDriverResponse, type Driver } from "@/shared/contracts";
-import { User, Phone, Mail, MapPin, Truck, Calendar, Navigation } from "lucide-react-native";
+import { User, Phone, Mail, MapPin, Truck, Calendar, Navigation, FileText } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 type Props = NativeStackScreenProps<RootStackParamList, "DriverDetailScreen">;
@@ -42,6 +42,11 @@ const DriverDetailScreen = ({ route }: Props) => {
 
   const handleEmail = (email: string) => {
     Linking.openURL(`mailto:${email}`);
+  };
+
+  const handleOpenMaps = (city: string, state: string) => {
+    const query = encodeURIComponent(`${city}, ${state}`);
+    Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${query}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -229,17 +234,22 @@ const DriverDetailScreen = ({ route }: Props) => {
             Driver Details
           </Text>
           <View className="bg-white rounded-xl p-4 gap-4 border border-slate-200">
-            <View className="flex-row items-center gap-3">
-              <View className="w-10 h-10 bg-purple-100 rounded-full items-center justify-center">
-                <MapPin size={20} color="#9333ea" />
+            <Pressable 
+              onPress={() => handleOpenMaps(driver.city, driver.state)}
+              className="active:opacity-70"
+            >
+              <View className="flex-row items-center gap-3">
+                <View className="w-10 h-10 bg-purple-100 rounded-full items-center justify-center">
+                  <MapPin size={20} color="#9333ea" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-xs text-purple-600 mb-1 font-medium">📍 TAP TO OPEN IN GOOGLE MAPS</Text>
+                  <Text className="text-base font-semibold text-purple-700">
+                    {driver.city}, {driver.state}
+                  </Text>
+                </View>
               </View>
-              <View className="flex-1">
-                <Text className="text-xs text-slate-500 mb-1">Location</Text>
-                <Text className="text-base font-semibold text-slate-900">
-                  {driver.city}, {driver.state}
-                </Text>
-              </View>
-            </View>
+            </Pressable>
 
             {driver.vehicleType && (
               <View className="flex-row items-center gap-3">
@@ -289,6 +299,25 @@ const DriverDetailScreen = ({ route }: Props) => {
                   <Text className="text-base text-slate-900 flex-1">{location}</Text>
                 </View>
               ))}
+            </View>
+          </View>
+        )}
+
+        {/* Notes Section */}
+        {driver.notes && (
+          <View className="mb-6">
+            <Text className="text-lg font-bold text-slate-900 mb-3">
+              Notes
+            </Text>
+            <View className="bg-white rounded-xl p-4 border border-slate-200">
+              <View className="flex-row items-start gap-3">
+                <View className="w-10 h-10 bg-amber-100 rounded-full items-center justify-center">
+                  <FileText size={20} color="#d97706" />
+                </View>
+                <Text className="text-base text-slate-700 flex-1 leading-6">
+                  {driver.notes}
+                </Text>
+              </View>
             </View>
           </View>
         )}
